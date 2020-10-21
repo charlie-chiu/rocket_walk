@@ -43,3 +43,18 @@ function newSky() {
         app.screen.height,
     )
 }
+
+window.onload = function () {
+    let conn;
+    if (window["WebSocket"]) {
+        conn = new WebSocket("ws://" + document.location.host + "/rocketrun");
+        conn.onmessage = function (evt) {
+            rocket.x += 5
+            rocket.y -= 5
+            // var messages = evt.data.split('\n');
+        };
+    } else {
+        const item = document.createElement("div");
+        item.innerHTML = "<b>Your browser does not support WebSockets.</b>";
+    }
+};
