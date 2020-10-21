@@ -1,8 +1,17 @@
 package rocket
 
 import (
-	"strconv"
+	"encoding/json"
+	"log"
 	"time"
+)
+
+const (
+	stateNew    = "new"
+	stateBetEnd = "betend"
+	stateLaunch = "launch"
+	stateBust   = "bust"
+	stateEnd    = "end"
 )
 
 // Launch Control Center
@@ -21,21 +30,50 @@ func NewLCC(communityCenter ClientPool) *LaunchControlCenter {
 }
 
 func (c LaunchControlCenter) Run() {
-	go func() {
-		var count int
-		tick := time.Tick(time.Second)
-		for {
-			select {
-			case <-tick:
-				if count < 100 {
-					c.cc.Broadcast([]byte(strconv.Itoa(count) + "m"))
-					count += 10
-				} else {
-					c.cc.Broadcast([]byte("BUST!"))
-					count = 0
-					time.Sleep(5 * time.Second)
-				}
-			}
+	new := time.After(0 * time.Second)
+	betend := time.After(1 * time.Second)
+	launch := time.After(2 * time.Second)
+	bust := time.After(5 * time.Second)
+	end := time.After(6 * time.Second)
+	for {
+		select {
+		case <-new:
+			c.cc.Broadcast(c.stateMsg(state{Name: stateNew}))
+		case <-betend:
+			c.cc.Broadcast(c.stateMsg(state{Name: stateBetEnd}))
+		case <-launch:
+			c.cc.Broadcast(c.stateMsg(state{Name: stateLaunch}))
+		case <-bust:
+			c.cc.Broadcast(c.stateMsg(state{Name: stateBust}))
+		case <-end:
+			c.cc.Broadcast(c.stateMsg(state{Name: stateEnd}))
+			new = time.After(0 * time.Second)
+			betend = time.After(1 * time.Second)
+			launch = time.After(2 * time.Second)
+			bust = time.After(5 * time.Second)
+			end = time.After(6 * time.Second)
+			continue
 		}
-	}()
+	}
+}
+
+func (c LaunchControlCenter) stateMsg(s state) (msg []byte) {
+	ws := wsBroadcast{
+		Name:    "on_state",
+		Payload: s,
+	}
+	msg, err := json.Marshal(&ws)
+	if err != nil {
+		log.Println("json marshal error", err)
+	}
+	return
+}
+
+type wsBroadcast struct {
+	Name    string `json:"name"`
+	Payload state  `json:"payload"`
+}
+
+type state struct {
+	Name string `json:"name"`
 }

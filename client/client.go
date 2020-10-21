@@ -14,10 +14,10 @@ const messageType = websocket.TextMessage
 var wsUpgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
-	Subprotocols:    []string{"gbcasino.bin"},
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
+	Subprotocols:    []string{},
+	//CheckOrigin: func(r *http.Request) bool {
+	//	return true
+	//},
 }
 
 type Client struct {
