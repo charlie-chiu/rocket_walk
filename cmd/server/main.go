@@ -3,34 +3,23 @@ package main
 import (
 	"log"
 	"net/http"
-	"strconv"
-	"time"
 
+	"github.com/joho/godotenv"
 	"rocket"
 )
 
 func main() {
-	addr := ":80"
-	hub := rocket.NewClientHub()
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatal("error loading .env file", err)
+	}
 
-	go func() {
-		var count = 10
-		tick := time.Tick(time.Second)
-		for {
-			select {
-			case <-tick:
-				if count > 0 {
-					hub.Broadcast([]byte(strconv.Itoa(count)))
-					count--
-				} else {
-					hub.Broadcast([]byte("LAUNCH!"))
-					count = 10
-					time.Sleep(5 * time.Second)
-				}
-			}
-		}
-	}()
+	const addr = ":80"
 
-	svr := rocket.NewServer(hub)
+	communityCenter := rocket.NewCommunityCenter()
+	launchControlCenter := rocket.NewLCC(communityCenter)
+	launchControlCenter.Run()
+
+	svr := rocket.NewServer(communityCenter)
 	log.Fatal(http.ListenAndServe(addr, svr))
 }
