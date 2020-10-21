@@ -16,11 +16,11 @@ app.stage.addChild(sky);
 let rocket = newRocket()
 app.stage.addChild(rocket);
 
-app.ticker.add((delta) => {
-
-    sky.tilePosition.x +=  1 * delta;
+let scrollSky = (delta) => {
+    sky.tilePosition.x -=  10 * delta;
     sky.tilePosition.y += 20 * delta;
-});
+};
+app.ticker.add(scrollSky);
 
 function newRocket() {
     let rocketTexture = PIXI.Texture.from('images/rocket.png');
@@ -28,10 +28,10 @@ function newRocket() {
         rocketTexture,
     )
     rocket.transform.scale.set(0.5, 0.5)
-    // rocket.rotation = 0.1
+    rocket.rotation = 0.4
     rocket.anchor.set(0.5, 1)
-    rocket.x = app.screen.width/2
-    rocket.y = app.screen.height
+    rocket.x = app.screen.width/2 - 100
+    rocket.y = app.screen.height  - 100
     return rocket
 }
 
