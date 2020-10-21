@@ -22,17 +22,17 @@ func NewLCC(communityCenter ClientPool) *LaunchControlCenter {
 
 func (c LaunchControlCenter) Run() {
 	go func() {
-		var count = 10
+		var count int
 		tick := time.Tick(time.Second)
 		for {
 			select {
 			case <-tick:
-				if count > 0 {
-					c.cc.Broadcast([]byte(strconv.Itoa(count)))
-					count--
+				if count < 100 {
+					c.cc.Broadcast([]byte(strconv.Itoa(count) + "m"))
+					count += 10
 				} else {
-					c.cc.Broadcast([]byte("LAUNCH!"))
-					count = 10
+					c.cc.Broadcast([]byte("BUST!"))
+					count = 0
 					time.Sleep(5 * time.Second)
 				}
 			}
