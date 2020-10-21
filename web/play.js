@@ -4,29 +4,42 @@ if (!PIXI.utils.isWebGLSupported()) {
 }
 PIXI.utils.sayHello(type)
 
-let application = PIXI.Application;
-let loader = PIXI.Loader.shared;
-
-let app = new application({
-    width:800,
-    height:600,
+let app = new PIXI.Application({
+    width: 600,
+    height: 800,
     antialias: true,
 })
 app.renderer.backgroundColor = 0x061639
-let rocket = new PIXI.Sprite
-loader.add("images/rocket.png").load(setup)
 
-function setup() {
-    rocket.texture = loader.resources["images/rocket.png"].texture;
-    rocket.name = "rocket"
-    rocket.transform.scale.set(0.5,0.5)
-    rocket.rotation = 0.5
-    rocket.anchor.set(0.5,0.5)
-    rocket.x = 400
-    rocket.y = 300
-    app.stage.addChild(rocket)
+let sky = newSky()
+app.stage.addChild(sky);
+let rocket = newRocket()
+app.stage.addChild(rocket);
+
+app.ticker.add((delta) => {
+
+    sky.tilePosition.x +=  1 * delta;
+    sky.tilePosition.y += 20 * delta;
+});
+
+function newRocket() {
+    let rocketTexture = PIXI.Texture.from('images/rocket.png');
+    let rocket = new PIXI.Sprite(
+        rocketTexture,
+    )
+    rocket.transform.scale.set(0.5, 0.5)
+    // rocket.rotation = 0.1
+    rocket.anchor.set(0.5, 1)
+    rocket.x = app.screen.width/2
+    rocket.y = app.screen.height
+    return rocket
 }
 
-console.log(rocket)
-
-rocket.y = 500
+function newSky() {
+    let skyTexture = PIXI.Texture.from('images/sky.png');
+    return new PIXI.TilingSprite(
+        skyTexture,
+        app.screen.width,
+        app.screen.height,
+    )
+}
