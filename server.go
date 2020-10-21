@@ -20,17 +20,29 @@ func NewServer(clients ClientPool) (s *Server) {
 	}
 
 	router := http.NewServeMux()
-	router.Handle("/dev", http.HandlerFunc(dev))
+	router.Handle("/dev", http.HandlerFunc(s.dev))
+	router.Handle("/play", http.HandlerFunc(s.play))
 	router.Handle("/rocketrun", http.HandlerFunc(s.connect))
+
+	// serve web contents
+	router.Handle("/web/", http.StripPrefix("/web/", http.FileServer(http.Dir("web"))))
+	router.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("web/images"))))
+
 	s.Handler = router
 
 	return
 }
 
-func dev(w http.ResponseWriter, r *http.Request) {
+func (s *Server) dev(w http.ResponseWriter, r *http.Request) {
 	log.Println(r.URL)
 	dir, _ := os.Getwd()
 	http.ServeFile(w, r, dir+"/dev.html")
+}
+
+func (s *Server) play(w http.ResponseWriter, r *http.Request) {
+	log.Println(r.URL)
+	dir, _ := os.Getwd()
+	http.ServeFile(w, r, dir+"/web/index.html")
 }
 
 func (s *Server) connect(w http.ResponseWriter, r *http.Request) {
