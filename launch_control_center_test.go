@@ -2,6 +2,7 @@ package rocket_test
 
 import (
 	"bytes"
+	"sync"
 	"testing"
 	"time"
 
@@ -10,10 +11,14 @@ import (
 
 type SpyClientPool struct {
 	broadMessages [][]byte
+
+	mu sync.Mutex
 }
 
 func (p *SpyClientPool) Broadcast(msg []byte) {
+	p.mu.Lock()
 	p.broadMessages = append(p.broadMessages, msg)
+	p.mu.Unlock()
 }
 
 func (SpyClientPool) NumberOfClients() int {
@@ -43,6 +48,8 @@ func TestLaunchControlCenter_Run(t *testing.T) {
 		[]byte(`{"name":"on_state","payload":{"name":"end"}}`),
 	}
 
+	clientPool.mu.Lock()
+	defer clientPool.mu.Unlock()
 	for i, msg := range expectedMsg {
 		if i+1 > len(clientPool.broadMessages) {
 			t.Fatalf("%dth msg not exsits, expected %s", i+1, string(msg))
