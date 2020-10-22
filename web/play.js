@@ -104,10 +104,10 @@ function handleWS() {
 function onState(payload) {
     switch (payload.name) {
         case "ready":
-            explosion.visible = false
+            stopSky()
+            rocket.visible = true
             break
         case "betend":
-            rocket.visible = true
             break
         case "launch":
             increaseSkyVector()
@@ -118,7 +118,7 @@ function onState(payload) {
             decreaseSkyVector()
             break
         case "end":
-            stopSky()
+            explosion.visible = false
             break
     }
 }

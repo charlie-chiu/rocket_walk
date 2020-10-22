@@ -30,30 +30,23 @@ func NewLCC(communityCenter ClientPool) *LaunchControlCenter {
 }
 
 func (c LaunchControlCenter) Run() {
-	ready := time.After(0 * time.Second)
-	betend := time.After(1 * time.Second)
-	launch := time.After(2 * time.Second)
-	bust := time.After(5 * time.Second)
-	end := time.After(6 * time.Second)
+	readyDuration := 3 * time.Second
+	betendDuration := 1 * time.Second
+	flyingDuration := 5 * time.Second
+	bustDuration := 1 * time.Second
+	endDuration := 1 * time.Second
+
 	for {
-		select {
-		case <-ready:
-			c.cc.Broadcast(c.stateMsg(state{Name: stateReady}))
-		case <-betend:
-			c.cc.Broadcast(c.stateMsg(state{Name: stateBetEnd}))
-		case <-launch:
-			c.cc.Broadcast(c.stateMsg(state{Name: stateLaunch}))
-		case <-bust:
-			c.cc.Broadcast(c.stateMsg(state{Name: stateBust}))
-		case <-end:
-			c.cc.Broadcast(c.stateMsg(state{Name: stateEnd}))
-			ready = time.After(0 * time.Second)
-			betend = time.After(1 * time.Second)
-			launch = time.After(2 * time.Second)
-			bust = time.After(5 * time.Second)
-			end = time.After(6 * time.Second)
-			continue
-		}
+		c.cc.Broadcast(c.stateMsg(state{Name: stateReady}))
+		time.Sleep(readyDuration)
+		c.cc.Broadcast(c.stateMsg(state{Name: stateBetEnd}))
+		time.Sleep(betendDuration)
+		c.cc.Broadcast(c.stateMsg(state{Name: stateLaunch}))
+		time.Sleep(flyingDuration)
+		c.cc.Broadcast(c.stateMsg(state{Name: stateBust}))
+		time.Sleep(bustDuration)
+		c.cc.Broadcast(c.stateMsg(state{Name: stateEnd}))
+		time.Sleep(endDuration)
 	}
 }
 
