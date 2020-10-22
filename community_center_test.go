@@ -52,14 +52,14 @@ func TestCommunityCenter_Broadcast(t *testing.T) {
 }
 
 func TestNumberOfClients(t *testing.T) {
+	numberOfClient := 5
 	cc := rocket.NewCommunityCenter()
-	expected := 5
-	for i := 0; i < expected; i++ {
+	for i := 0; i < numberOfClient; i++ {
 		cc.Register(&rocket.Client{})
 	}
 
 	got := cc.NumberOfClients()
-	if got != expected {
-		t.Errorf("expected number of client %d, got %d", expected, got)
+	if got != numberOfClient {
+		t.Errorf("expected number of client %d, got %d", numberOfClient, got)
 	}
 }
