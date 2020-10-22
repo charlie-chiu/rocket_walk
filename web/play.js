@@ -1,28 +1,56 @@
-let type = "WebGL"
-if (!PIXI.utils.isWebGLSupported()) {
-    type = "canvas"
-}
-PIXI.utils.sayHello(type)
+window.onload = function () {
+    handleWS()
+};
 
-let app = new PIXI.Application({
-    width: 600,
-    height: 800,
-    antialias: true,
-})
-app.renderer.backgroundColor = 0x061639
 
+let skyVectorX = 0.05;
+let skyVectorY = 0.05;
+
+let app = initPIXI();
 let sky = newSky()
 app.stage.addChild(sky);
+app.ticker.add(scrollSky);
 let rocket = newRocket()
 app.stage.addChild(rocket);
 let explosion = newExplosion()
 app.stage.addChild(explosion);
 
-let scrollSky = (delta) => {
-    sky.tilePosition.x -= 25 * delta;
-    sky.tilePosition.y += 50 * delta;
-};
+function scrollSky(delta) {
+    sky.tilePosition.x -= skyVectorX * delta;
+    sky.tilePosition.y += skyVectorY * delta;
+}
+function increaseSkyVector(limit = 25) {
+    while (skyVectorY <= 50) {
+        let rand = (Math.random() - 0.5) * 0.1
+        skyVectorX += rand + 0.05
+        skyVectorY += rand + 0.10
+    }
+}
+function decreaseSkyVector(limit = 25) {
+    skyVectorX *= 0.2
+    skyVectorY *= 0.2
+}
+function stopSky() {
+    skyVectorX = 0.05
+    skyVectorY = 0.05
+}
 
+function initPIXI() {
+    let type = "WebGL"
+    if (!PIXI.utils.isWebGLSupported()) {
+        type = "canvas"
+    }
+    PIXI.utils.sayHello(type)
+
+    let app = new PIXI.Application({
+        width: 600,
+        height: 800,
+        antialias: true,
+    })
+    app.renderer.backgroundColor = 0x061639
+
+    return app
+}
 function newRocket() {
     let rocketTexture = PIXI.Texture.from('images/rocket.png');
     let rocket = new PIXI.Sprite(
@@ -58,11 +86,7 @@ function newSky() {
     )
 }
 
-window.onload = function () {
-    handleWS()
-};
-
-let handleWS = () => {
+function handleWS() {
     let conn;
     if (window["WebSocket"]) {
         conn = new WebSocket("ws://" + document.location.host + "/rocketrun");
@@ -77,26 +101,25 @@ let handleWS = () => {
         item.innerHTML = "<b>Your browser does not support WebSockets.</b>";
     }
 }
-let onState = (payload) => {
+function onState(payload) {
     switch (payload.name) {
         case "new":
             explosion.visible = false
-            console.log("state: new")
+            rocket.visible = true
             break
         case "betend":
             console.log("state: betend")
             break
         case "launch":
-            console.log("state: launch")
-            app.ticker.add(scrollSky);
+            increaseSkyVector()
             break
         case "bust":
             explosion.visible = true
-            console.log("state: bust");
+            rocket.visible = false
+            decreaseSkyVector()
             break
         case "end":
-            console.log("state: end")
-            app.ticker.remove(scrollSky);
+            stopSky()
             break
     }
 }
