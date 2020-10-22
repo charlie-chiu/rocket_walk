@@ -17,10 +17,9 @@ let rocket = newRocket()
 app.stage.addChild(rocket);
 
 let scrollSky = (delta) => {
-    sky.tilePosition.x -=  10 * delta;
-    sky.tilePosition.y += 20 * delta;
+    sky.tilePosition.x -= 25 * delta;
+    sky.tilePosition.y += 50 * delta;
 };
-app.ticker.add(scrollSky);
 
 function newRocket() {
     let rocketTexture = PIXI.Texture.from('images/rocket.png');
@@ -30,11 +29,10 @@ function newRocket() {
     rocket.transform.scale.set(0.5, 0.5)
     rocket.rotation = 0.4
     rocket.anchor.set(0.5, 1)
-    rocket.x = app.screen.width/2 - 100
-    rocket.y = app.screen.height  - 100
+    rocket.x = app.screen.width / 2 - 200
+    rocket.y = app.screen.height
     return rocket
 }
-
 function newSky() {
     let skyTexture = PIXI.Texture.from('images/sky.png');
     return new PIXI.TilingSprite(
@@ -45,16 +43,42 @@ function newSky() {
 }
 
 window.onload = function () {
+    handleWS()
+};
+
+let handleWS = () => {
     let conn;
     if (window["WebSocket"]) {
         conn = new WebSocket("ws://" + document.location.host + "/rocketrun");
         conn.onmessage = function (evt) {
-            rocket.x += 5
-            rocket.y -= 5
-            // var messages = evt.data.split('\n');
+            let data = JSON.parse(evt.data)
+            if (data.name === "on_state") {
+                onState(data.payload)
+            }
         };
     } else {
         const item = document.createElement("div");
         item.innerHTML = "<b>Your browser does not support WebSockets.</b>";
     }
-};
+}
+let onState = (payload) => {
+    switch (payload.name) {
+        case "new":
+            console.log("state: new")
+            break
+        case "betend":
+            console.log("state: betend")
+            break
+        case "launch":
+            console.log("state: launch")
+            app.ticker.add(scrollSky);
+            break
+        case "bust":
+            console.log("state: bust");
+            break
+        case "end":
+            console.log("state: end")
+            app.ticker.remove(scrollSky);
+            break
+    }
+}
