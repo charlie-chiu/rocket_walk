@@ -47,6 +47,4 @@ func (s *Server) connect(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	_ = s.clients.Register(c)
-
-	c.WriteMsg([]byte("Hello, astronaut"))
 }
