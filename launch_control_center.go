@@ -19,6 +19,14 @@ const (
 	stateEnd    = "end"
 )
 
+const (
+	ReadyDuration  = 3 * time.Second
+	BetendDuration = 1 * time.Second
+	FlyingDuration = 5 * time.Second
+	BustDuration   = 1 * time.Second
+	EndDuration    = 1 * time.Second
+)
+
 type LaunchControlCenter struct {
 	cc ClientPool
 }
@@ -29,24 +37,20 @@ func NewLCC(communityCenter ClientPool) *LaunchControlCenter {
 	}
 }
 
-func (c LaunchControlCenter) Run() {
-	readyDuration := 3 * time.Second
-	betendDuration := 1 * time.Second
-	flyingDuration := 5 * time.Second
-	bustDuration := 1 * time.Second
-	endDuration := 1 * time.Second
-
+func (c LaunchControlCenter) Run(r int) {
+	// todo: find proper name
+	rate := time.Duration(r)
 	for {
 		c.cc.Broadcast(c.stateMsg(state{Name: stateReady}))
-		time.Sleep(readyDuration)
+		time.Sleep(ReadyDuration * rate)
 		c.cc.Broadcast(c.stateMsg(state{Name: stateBetEnd}))
-		time.Sleep(betendDuration)
+		time.Sleep(BetendDuration * rate)
 		c.cc.Broadcast(c.stateMsg(state{Name: stateLaunch}))
-		time.Sleep(flyingDuration)
+		time.Sleep(FlyingDuration * rate)
 		c.cc.Broadcast(c.stateMsg(state{Name: stateBust}))
-		time.Sleep(bustDuration)
+		time.Sleep(BustDuration * rate)
 		c.cc.Broadcast(c.stateMsg(state{Name: stateEnd}))
-		time.Sleep(endDuration)
+		time.Sleep(EndDuration * rate)
 	}
 }
 

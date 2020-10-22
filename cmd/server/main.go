@@ -18,7 +18,7 @@ func main() {
 
 	communityCenter := rocket.NewCommunityCenter()
 	launchControlCenter := rocket.NewLCC(communityCenter)
-	go launchControlCenter.Run()
+	go launchControlCenter.Run(3)
 
 	svr := rocket.NewServer(communityCenter)
 	log.Fatal(http.ListenAndServe(addr, svr))
