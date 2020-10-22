@@ -1,4 +1,4 @@
-package client
+package rocket
 
 import (
 	"encoding/json"

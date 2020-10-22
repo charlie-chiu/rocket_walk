@@ -3,8 +3,6 @@ package rocket
 import (
 	"net/http"
 	"os"
-
-	"rocket/client"
 )
 
 type Server struct {
@@ -43,7 +41,7 @@ func (s *Server) play(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) connect(w http.ResponseWriter, r *http.Request) {
-	c := &client.Client{}
+	c := &Client{}
 	err := c.ServeWS(w, r)
 	if err != nil {
 		return

@@ -6,6 +6,11 @@ import (
 	"time"
 )
 
+// Launch Control Center
+type GameKernel interface {
+	Run()
+}
+
 const (
 	stateNew    = "new"
 	stateBetEnd = "betend"
@@ -13,11 +18,6 @@ const (
 	stateBust   = "bust"
 	stateEnd    = "end"
 )
-
-// Launch Control Center
-type GameKernel interface {
-	Run()
-}
 
 type LaunchControlCenter struct {
 	cc ClientPool
