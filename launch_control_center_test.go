@@ -20,11 +20,11 @@ func (SpyClientPool) NumberOfClients() int {
 	panic("implement me")
 }
 
-func (SpyClientPool) Register(client *rocket.Client) error {
+func (SpyClientPool) Register(client rocket.Clienter) error {
 	panic("implement me")
 }
 
-func (SpyClientPool) Unregister(client *rocket.Client) {
+func (SpyClientPool) Unregister(client rocket.Clienter) {
 	panic("implement me")
 }
 

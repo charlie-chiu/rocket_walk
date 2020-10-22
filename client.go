@@ -9,6 +9,12 @@ import (
 	"rocket/log"
 )
 
+type Clienter interface {
+	ServeWS(w http.ResponseWriter, r *http.Request) error
+	ListenJSON(wsMsg chan []byte)
+	WriteMsg(msg []byte)
+}
+
 const messageType = websocket.TextMessage
 
 var wsUpgrader = websocket.Upgrader{
