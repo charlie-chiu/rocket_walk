@@ -15,6 +15,8 @@ let sky = newSky()
 app.stage.addChild(sky);
 let rocket = newRocket()
 app.stage.addChild(rocket);
+let explosion = newExplosion()
+app.stage.addChild(explosion);
 
 let scrollSky = (delta) => {
     sky.tilePosition.x -= 25 * delta;
@@ -32,6 +34,20 @@ function newRocket() {
     rocket.x = app.screen.width / 2 - 200
     rocket.y = app.screen.height
     return rocket
+}
+function newExplosion() {
+    let explosionTexture = PIXI.Texture.from('images/explosion.png');
+    let explosion = new PIXI.Sprite(
+        explosionTexture,
+    )
+    explosion.alpha = 0.9
+    explosion.transform.scale.set(0.3,0.3)
+    explosion.rotation =1.5
+    explosion.anchor.set(0.5, 0.5)
+    explosion.x = app.screen.width / 2 - 150
+    explosion.y = app.screen.height - 150
+    explosion.visible = false
+    return explosion
 }
 function newSky() {
     let skyTexture = PIXI.Texture.from('images/sky.png');
@@ -64,6 +80,7 @@ let handleWS = () => {
 let onState = (payload) => {
     switch (payload.name) {
         case "new":
+            explosion.visible = false
             console.log("state: new")
             break
         case "betend":
@@ -74,6 +91,7 @@ let onState = (payload) => {
             app.ticker.add(scrollSky);
             break
         case "bust":
+            explosion.visible = true
             console.log("state: bust");
             break
         case "end":
