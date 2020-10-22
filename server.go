@@ -1,7 +1,6 @@
 package rocket
 
 import (
-	"log"
 	"net/http"
 	"os"
 
@@ -34,15 +33,13 @@ func NewServer(clients ClientPool) (s *Server) {
 }
 
 func (s *Server) dev(w http.ResponseWriter, r *http.Request) {
-	log.Println(r.URL)
 	dir, _ := os.Getwd()
-	http.ServeFile(w, r, dir+"/dev.html")
+	http.ServeFile(w, r, dir+"/web/dev.html")
 }
 
 func (s *Server) play(w http.ResponseWriter, r *http.Request) {
-	log.Println(r.URL)
 	dir, _ := os.Getwd()
-	http.ServeFile(w, r, dir+"/web/index.html")
+	http.ServeFile(w, r, dir+"/web/play.html")
 }
 
 func (s *Server) connect(w http.ResponseWriter, r *http.Request) {
