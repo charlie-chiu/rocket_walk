@@ -103,7 +103,7 @@ function handleWS() {
 }
 function onState(payload) {
     switch (payload.name) {
-        case "new":
+        case "ready":
             explosion.visible = false
             rocket.visible = true
             break

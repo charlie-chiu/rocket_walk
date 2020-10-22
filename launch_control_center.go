@@ -12,7 +12,7 @@ type GameKernel interface {
 }
 
 const (
-	stateNew    = "new"
+	stateReady  = "ready"
 	stateBetEnd = "betend"
 	stateLaunch = "launch"
 	stateBust   = "bust"
@@ -30,15 +30,15 @@ func NewLCC(communityCenter ClientPool) *LaunchControlCenter {
 }
 
 func (c LaunchControlCenter) Run() {
-	new := time.After(0 * time.Second)
+	ready := time.After(0 * time.Second)
 	betend := time.After(1 * time.Second)
 	launch := time.After(2 * time.Second)
 	bust := time.After(5 * time.Second)
 	end := time.After(6 * time.Second)
 	for {
 		select {
-		case <-new:
-			c.cc.Broadcast(c.stateMsg(state{Name: stateNew}))
+		case <-ready:
+			c.cc.Broadcast(c.stateMsg(state{Name: stateReady}))
 		case <-betend:
 			c.cc.Broadcast(c.stateMsg(state{Name: stateBetEnd}))
 		case <-launch:
@@ -47,7 +47,7 @@ func (c LaunchControlCenter) Run() {
 			c.cc.Broadcast(c.stateMsg(state{Name: stateBust}))
 		case <-end:
 			c.cc.Broadcast(c.stateMsg(state{Name: stateEnd}))
-			new = time.After(0 * time.Second)
+			ready = time.After(0 * time.Second)
 			betend = time.After(1 * time.Second)
 			launch = time.After(2 * time.Second)
 			bust = time.After(5 * time.Second)
