@@ -105,10 +105,9 @@ function onState(payload) {
     switch (payload.name) {
         case "ready":
             explosion.visible = false
-            rocket.visible = true
             break
         case "betend":
-            console.log("state: betend")
+            rocket.visible = true
             break
         case "launch":
             increaseSkyVector()
