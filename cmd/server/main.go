@@ -6,6 +6,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"rocket"
+	"rocket/rng"
 )
 
 func main() {
@@ -17,8 +18,9 @@ func main() {
 	const addr = ":80"
 
 	communityCenter := rocket.NewCommunityCenter()
-	launchControlCenter := rocket.NewLCC(communityCenter)
-	go launchControlCenter.Run(3)
+	rng := rng.New()
+	launchControlCenter := rocket.NewLCC(communityCenter, rng)
+	go launchControlCenter.Run(1)
 
 	svr := rocket.NewServer(communityCenter)
 	log.Fatal(http.ListenAndServe(addr, svr))

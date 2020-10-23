@@ -33,9 +33,21 @@ func (SpyClientPool) Unregister(client rocket.Clienter) {
 	panic("implement me")
 }
 
+type MockNumberGenerator struct {
+	bust rocket.Bust
+}
+
+func (m MockNumberGenerator) GenerateBust() rocket.Bust {
+	return m.bust
+}
+
 func TestLaunchControlCenter_Run(t *testing.T) {
+	mockNumberGenerator := &MockNumberGenerator{bust: rocket.Bust{
+		Value:    3.64,
+		Duration: 3640 * time.Millisecond,
+	}}
 	clientPool := SpyClientPool{}
-	lcc := rocket.NewLCC(&clientPool)
+	lcc := rocket.NewLCC(&clientPool, mockNumberGenerator)
 	go lcc.Run(0)
 
 	waitForProcess()

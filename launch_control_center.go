@@ -22,35 +22,48 @@ const (
 const (
 	ReadyDuration  = 3 * time.Second
 	BetendDuration = 1 * time.Second
-	FlyingDuration = 5 * time.Second
-	BustDuration   = 1 * time.Second
-	EndDuration    = 1 * time.Second
+	//FlyingDuration = 5 * time.Second
+	BustDuration = 1 * time.Second
+	EndDuration  = 1 * time.Second
 )
+
+type Bust struct {
+	Value    float32
+	Duration time.Duration
+}
+
+type Generator interface {
+	GenerateBust() Bust
+}
 
 type LaunchControlCenter struct {
 	cc ClientPool
+	g  Generator
 }
 
-func NewLCC(communityCenter ClientPool) *LaunchControlCenter {
+func NewLCC(communityCenter ClientPool, g Generator) *LaunchControlCenter {
 	return &LaunchControlCenter{
 		cc: communityCenter,
+		g:  g,
 	}
 }
 
 func (c LaunchControlCenter) Run(r int) {
-	// todo: find proper name
-	rate := time.Duration(r)
+	var timeScale = time.Duration(r)
+
 	for {
+		bust := c.g.GenerateBust()
+
 		c.cc.Broadcast(c.stateMsg(state{Name: stateReady}))
-		time.Sleep(ReadyDuration * rate)
+		time.Sleep(ReadyDuration * timeScale)
 		c.cc.Broadcast(c.stateMsg(state{Name: stateBetEnd}))
-		time.Sleep(BetendDuration * rate)
+		time.Sleep(BetendDuration * timeScale)
 		c.cc.Broadcast(c.stateMsg(state{Name: stateLaunch}))
-		time.Sleep(FlyingDuration * rate)
-		c.cc.Broadcast(c.stateMsg(state{Name: stateBust, Bust: 3.64}))
-		time.Sleep(BustDuration * rate)
-		c.cc.Broadcast(c.stateMsg(state{Name: stateEnd, Bust: 3.64}))
-		time.Sleep(EndDuration * rate)
+		time.Sleep(bust.Duration * timeScale)
+		c.cc.Broadcast(c.stateMsg(state{Name: stateBust, Bust: bust.Value}))
+		time.Sleep(BustDuration * timeScale)
+		c.cc.Broadcast(c.stateMsg(state{Name: stateEnd, Bust: bust.Value}))
+		time.Sleep(EndDuration * timeScale)
 	}
 }
 
