@@ -44,8 +44,8 @@ func TestLaunchControlCenter_Run(t *testing.T) {
 		[]byte(`{"name":"on_state","payload":{"name":"ready"}}`),
 		[]byte(`{"name":"on_state","payload":{"name":"betend"}}`),
 		[]byte(`{"name":"on_state","payload":{"name":"launch"}}`),
-		[]byte(`{"name":"on_state","payload":{"name":"bust"}}`),
-		[]byte(`{"name":"on_state","payload":{"name":"end"}}`),
+		[]byte(`{"name":"on_state","payload":{"name":"bust","bust":3.64}}`),
+		[]byte(`{"name":"on_state","payload":{"name":"end","bust":3.64}}`),
 	}
 
 	clientPool.mu.Lock()

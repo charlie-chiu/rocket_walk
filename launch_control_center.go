@@ -47,9 +47,9 @@ func (c LaunchControlCenter) Run(r int) {
 		time.Sleep(BetendDuration * rate)
 		c.cc.Broadcast(c.stateMsg(state{Name: stateLaunch}))
 		time.Sleep(FlyingDuration * rate)
-		c.cc.Broadcast(c.stateMsg(state{Name: stateBust}))
+		c.cc.Broadcast(c.stateMsg(state{Name: stateBust, Bust: 3.64}))
 		time.Sleep(BustDuration * rate)
-		c.cc.Broadcast(c.stateMsg(state{Name: stateEnd}))
+		c.cc.Broadcast(c.stateMsg(state{Name: stateEnd, Bust: 3.64}))
 		time.Sleep(EndDuration * rate)
 	}
 }
@@ -72,5 +72,6 @@ type wsBroadcast struct {
 }
 
 type state struct {
-	Name string `json:"name"`
+	Name string  `json:"name"`
+	Bust float32 `json:"bust,omitempty"`
 }
