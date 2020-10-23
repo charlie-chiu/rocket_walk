@@ -21,15 +21,15 @@ func (p *SpyClientPool) Broadcast(msg []byte) {
 	p.mu.Unlock()
 }
 
-func (SpyClientPool) NumberOfClients() int {
+func (_ *SpyClientPool) NumberOfClients() int {
 	panic("implement me")
 }
 
-func (SpyClientPool) Register(client rocket.Clienter) error {
+func (_ *SpyClientPool) Register(client rocket.Clienter) error {
 	panic("implement me")
 }
 
-func (SpyClientPool) Unregister(client rocket.Clienter) {
+func (_ *SpyClientPool) Unregister(client rocket.Clienter) {
 	panic("implement me")
 }
 
