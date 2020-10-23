@@ -5,16 +5,29 @@ window.onload = function () {
 
 let skyVectorX = 0.05;
 let skyVectorY = 0.05;
+let payout = 0.0
 
 let app = initPIXI();
 let sky = newSky()
 app.stage.addChild(sky);
-app.ticker.add(scrollSky);
 let rocket = newRocket()
 app.stage.addChild(rocket);
 let explosion = newExplosion()
 app.stage.addChild(explosion);
+let stateText = newStateText();
+app.stage.addChild(stateText)
 
+app.ticker.add(scrollSky);
+
+
+function increasePayout(delta) {
+    if (payout < 3) {
+        payout += 0.01 * delta
+    } else {
+        payout += 0.02 * delta
+    }
+    stateText.text = (Math.round(payout * 100) / 100).toFixed(2) + "x"
+}
 function scrollSky(delta) {
     sky.tilePosition.x -= skyVectorX * delta;
     sky.tilePosition.y += skyVectorY * delta;
@@ -85,6 +98,30 @@ function newSky() {
         app.screen.height,
     )
 }
+function newStateText() {
+    const style = new PIXI.TextStyle({
+        fontFamily: 'Arial',
+        fontSize: 108,
+        fontStyle: 'italic',
+        fontWeight: 'bold',
+        fill: ['#ffffff', '#00ff99'], // gradient
+        stroke: '#4a1850',
+        strokeThickness: 5,
+        dropShadow: true,
+        dropShadowColor: '#000000',
+        dropShadowBlur: 4,
+        dropShadowAngle: Math.PI / 6,
+        dropShadowDistance: 6,
+        wordWrap: true,
+        wordWrapWidth: 440,
+        lineJoin: 'round'
+    });
+
+    let text = new PIXI.Text('0.00x', style);
+    text.anchor.set(1,0)
+    text.x = app.screen.width
+    return text;
+}
 
 function handleWS() {
     let conn;
@@ -106,19 +143,26 @@ function onState(payload) {
         case "ready":
             stopSky()
             rocket.visible = true
+            stateText.text = "0.00x"
             break
         case "betend":
             break
         case "launch":
             increaseSkyVector()
+            app.ticker.add(increasePayout)
             break
         case "bust":
             explosion.visible = true
             rocket.visible = false
-            decreaseSkyVector()
+            decreaseSkyVector();
+            app.ticker.remove(increasePayout);
+            payout = payload.bust
+            stateText.text = payout + "x"
             break
         case "end":
             explosion.visible = false
+            payout = 0.0
+            stateText.text = payout + "x"
             break
     }
 }
